@@ -1,125 +1,124 @@
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View, TextInput, Pressable } from "react-native";
 import { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  Button,
-  FlatList,
-  Pressable,
-  Alert,
-} from "react-native";
 
 export default function App() {
-  const [enteredNoteText, setEnteredNoteText] = useState("");
-  const [notes, setNotes] = useState([]);
-  const [selectedNoteId, setSelectedNoteId] = useState(null);
-
-  function noteInputHandler(text) {
-    setEnteredNoteText(text);
-  }
-
-  function addNoteHandler() {
-    if (!enteredNoteText.trim()) return;
-
-    setNotes((currentNotes) => [
-      ...currentNotes,
-      { id: Math.random().toString(), text: enteredNoteText },
-    ]);
-
-    setEnteredNoteText("");
-  }
-
-  function deleteNoteHandler(id) {
-    setNotes((currentNotes) => currentNotes.filter((note) => note.id !== id));
-
-    if (selectedNoteId === id) {
-      setSelectedNoteId(null);
-      setEnteredNoteText("");
-    }
-  }
-
-  function confirmDeleteHandler(id) {
-    Alert.alert("Delete this note?", "Are you sure you want to delete it?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Yes",
-        style: "destructive",
-        onPress: () => deleteNoteHandler(id),
-      },
-    ]);
-  }
-
-  function openNoteHandler(id) {
-    const noteToEdit = notes.find((note) => note.id === id);
-    if (!noteToEdit) return;
-
-    setSelectedNoteId(id);
-    setEnteredNoteText(noteToEdit.text);
-  }
-
-  function updateNoteHandler() {
-    if (!enteredNoteText.trim()) return;
-
-    setNotes((currentNotes) =>
-      currentNotes.map((note) =>
-        note.id === selectedNoteId ? { ...note, text: enteredNoteText } : note,
-      ),
-    );
-
-    setSelectedNoteId(null);
-    setEnteredNoteText("");
-  }
-
-  function cancelEditHandler() {
-    setSelectedNoteId(null);
-    setEnteredNoteText("");
-  }
+  const [screen, setScreen] = useState("login");
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.textInputArea}
-          placeholder="Add Note!"
-          onChangeText={noteInputHandler}
-          value={enteredNoteText}
-        />
+      {screen === "login" ? (
+        <>
+          <Text style={styles.title}>Midterm Exam</Text>
+          <Text style={styles.subtitle}>Login to continue</Text>
 
-        {selectedNoteId ? (
-          <View style={{ gap: 6 }}>
-            <Button title="Update" onPress={updateNoteHandler} />
-            <Button title="Cancel" onPress={cancelEditHandler} />
-          </View>
-        ) : (
-          <Button title="Add Note" onPress={addNoteHandler} />
-        )}
-      </View>
+          <View style={styles.card}>
+            <Text style={styles.label}>Username</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your username"
+              placeholderTextColor="#9ca3af"
+            />
 
-      <View style={styles.goalsContainer}>
-        <Text style={styles.listTitle}>
-          {selectedNoteId ? "Editing Note:" : "List of Notes:"}
-        </Text>
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your password"
+              placeholderTextColor="#9ca3af"
+              secureTextEntry
+            />
 
-        <FlatList
-          data={notes}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
+            <Pressable>
+              <Text style={styles.forgotPassword}>Forgot Password?</Text>
+            </Pressable>
+
             <Pressable
-              onPress={() => openNoteHandler(item.id)}
-              onLongPress={() => confirmDeleteHandler(item.id)}
-              delayLongPress={300}
               style={({ pressed }) => [
-                styles.noteItem,
-                selectedNoteId === item.id && styles.selectedItem,
-                pressed && styles.pressedItem,
+                styles.button,
+                pressed && styles.pressedButton,
               ]}
             >
-              <Text>{item.text}</Text>
+              <Text style={styles.buttonText}>Sign In</Text>
             </Pressable>
-          )}
-        />
-      </View>
+
+            <Pressable
+              onPress={() => setScreen("register")}
+              style={({ pressed }) => [
+                styles.registerButton,
+                pressed && styles.pressedRegisterButton,
+              ]}
+            >
+              <Text style={styles.registerButtonText}>Register</Text>
+            </Pressable>
+          </View>
+        </>
+      ) : (
+        <>
+          <Text style={styles.title}>Create Account</Text>
+          <Text style={styles.subtitle}>Register your account</Text>
+
+          <View style={styles.card}>
+            <Text style={styles.label}>Full Name</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your full name"
+              placeholderTextColor="#9ca3af"
+            />
+
+            <Text style={styles.label}>Username</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Choose a username"
+              placeholderTextColor="#9ca3af"
+            />
+
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your email"
+              placeholderTextColor="#9ca3af"
+              keyboardType="email-address"
+            />
+
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Create a password"
+              placeholderTextColor="#9ca3af"
+              secureTextEntry
+            />
+
+            <Text style={styles.label}>Confirm Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm your password"
+              placeholderTextColor="#9ca3af"
+              secureTextEntry
+            />
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                pressed && styles.pressedButton,
+              ]}
+            >
+              <Text style={styles.buttonText}>Create Account</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => setScreen("login")}
+              style={({ pressed }) => [
+                styles.backButton,
+                pressed && styles.pressedRegisterButton,
+              ]}
+            >
+              <Text style={styles.backButtonText}>Back to Login</Text>
+            </Pressable>
+          </View>
+        </>
+      )}
+
+      <StatusBar style="dark" />
     </View>
   );
 }
@@ -127,45 +126,121 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
-    paddingHorizontal: 16,
-    backgroundColor: "#fff",
+    backgroundColor: "#eef2f7",
+    justifyContent: "center",
+    paddingHorizontal: 20,
   },
-  inputContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 25,
-    borderBottomWidth: 1,
-    padding: 10,
-    borderColor: "#dfdfdf",
-  },
-  textInputArea: {
-    borderWidth: 2,
-    borderColor: "#dfdfdf",
-    width: "60%",
-    marginRight: 8,
-    padding: 8,
-  },
-  goalsContainer: {
-    flex: 1,
-  },
-  listTitle: {
-    marginBottom: 10,
+
+  title: {
+    fontSize: 30,
     fontWeight: "bold",
+    color: "#1e3a8a",
+    textAlign: "center",
+    marginBottom: 6,
   },
-  noteItem: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 10,
+
+  subtitle: {
+    fontSize: 15,
+    color: "#6b7280",
+    textAlign: "center",
+    marginBottom: 30,
+  },
+
+  card: {
+    backgroundColor: "#ffffff",
+    padding: 24,
+    borderRadius: 20,
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+  },
+
+  label: {
+    fontSize: 15,
+    fontWeight: "600",
     marginBottom: 8,
-    borderRadius: 6,
+    color: "#374151",
   },
-  selectedItem: {
-    borderColor: "black",
-    borderWidth: 2,
+
+  input: {
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 16,
+    marginBottom: 18,
+    backgroundColor: "#f9fafb",
   },
-  pressedItem: {
-    opacity: 0.5,
+
+  forgotPassword: {
+    textAlign: "right",
+    color: "#2563eb",
+    marginBottom: 22,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+
+  button: {
+    backgroundColor: "#2563eb",
+    paddingVertical: 15,
+    borderRadius: 14,
+    alignItems: "center",
+    marginBottom: 12,
+    shadowColor: "#2563eb",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    elevation: 4,
+  },
+
+  pressedButton: {
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
+  },
+
+  buttonText: {
+    color: "#ffffff",
+    fontSize: 17,
+    fontWeight: "bold",
+    letterSpacing: 0.5,
+  },
+
+  registerButton: {
+    borderWidth: 1.5,
+    borderColor: "#2563eb",
+    paddingVertical: 15,
+    borderRadius: 14,
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+  },
+
+  pressedRegisterButton: {
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
+  },
+
+  registerButtonText: {
+    color: "#2563eb",
+    fontSize: 17,
+    fontWeight: "bold",
+    letterSpacing: 0.5,
+  },
+
+  backButton: {
+    borderWidth: 1.5,
+    borderColor: "#9ca3af",
+    paddingVertical: 15,
+    borderRadius: 14,
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+  },
+
+  backButtonText: {
+    color: "#4b5563",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
